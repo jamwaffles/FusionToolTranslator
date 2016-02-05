@@ -1,5 +1,6 @@
 extern crate rustc_serialize;
 mod fusion_tool;
+mod linuxcnc_tool;
 
 use std::error::Error;
 use std::fs::File;
@@ -9,6 +10,7 @@ use std::process;
 
 use rustc_serialize::json::Json;
 use fusion_tool::FusionTool;
+use linuxcnc_tool::LinuxCNCTool;
 
 fn main() {
 	let path = env::args().last().unwrap();
