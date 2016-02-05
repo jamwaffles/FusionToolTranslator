@@ -52,5 +52,5 @@ fn main() {
 		})
 	}
 
-	println!("{:?}", fusion_tools);
+	println!("{}", fusion_tools[0]);
 }
