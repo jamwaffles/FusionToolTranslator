@@ -43,15 +43,48 @@ fn main() {
 
 	let fusion_tools = parsed_tools
 		.iter()
-		.map(|tool|
+		.map(|tool| {
+			let tool_number = match tool.find_path(&[ "post-process", "number" ]) {
+				Some(field) => match field.as_u64() {
+					Some(number) => number as u16,
+					None => panic!("Tool number parse error, probably not a number"),
+				},
+				None => panic!("Tool number not defined"),
+			};
+
 			FusionTool {
-				number: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
-				pocket: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
-				description: String::from(tool.find("description").unwrap().as_string().unwrap()),
-				diameter: tool.find_path(&[ "geometry", "tip-diameter" ]).unwrap().as_f64().unwrap() as f32,
+				number: tool_number,
+
+				description: match tool.find("description") {
+					Some(field) => match field.as_string() {
+						Some(description) => String::from(description),
+						None => panic!("Tool description parse error"),
+					},
+					None => String::from(""),
+				},
+
+				cutter_type: match tool.find("type") {
+					Some(field) => match field.as_string() {
+						Some(cutter_type) => String::from(cutter_type),
+						None => panic!("Tool type parse error"),
+					},
+					None => String::from(""),
+				},
+
+				diameter: match tool.find_path(&[ "geometry", "DC" ]) {
+					Some(field) => match field.as_f64() {
+						Some(number) => number as f32,
+						None => panic!("Tool diameter parse error"),
+					},
+					None => panic!("Tool diameter not defined"),
+				}
 			}
-		)
+		})
 		.collect::<Vec<FusionTool>>();
 
-	println!("Parsed {} tools", fusion_tools.len());
+	println!("No.\tDia.\tDescription");
+
+	for tool in fusion_tools {
+		println!("{}", tool);
+	}
 }
