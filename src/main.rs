@@ -110,13 +110,22 @@ fn main() {
 		Err(e) => panic!("Unable to open {} for writing: {}", out_path, Error::description(&e)),
 	};
 
-	output_file.set_len(0);
+	match output_file.set_len(0) {
+		Err(e) => panic!("Could not reset tool table file: {}", Error::description(&e)),
+		_ => ()
+	};
 
 	for t in linuxcnc_tools.iter() {
 		let line = format!("T{} P{} D{} ;{}\n", t.number, t.number, t.diameter, t.description);
 
-		output_file.write(String::from(line).as_bytes());
+		match output_file.write(String::from(line).as_bytes()) {
+			Err(e) => panic!("Could not write tool table record: {}", Error::description(&e)),
+			_ => ()
+		};
 	}
 
-	output_file.sync_all();
+	match output_file.sync_all() {
+		Ok(_) => println!("Tool table saved successfully"),
+		Err(e) => panic!("JSON parse error: {}", Error::description(&e)),
+	};
 }
