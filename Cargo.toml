@@ -1,0 +1,6 @@
+[package]
+name = "fusion360_tool_translator"
+version = "0.1.0"
+authors = ["James Waples <jamwaffles@gmail.com>"]
+
+[dependencies]
