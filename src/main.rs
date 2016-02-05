@@ -74,7 +74,7 @@ fn main() {
 				diameter: match tool.find_path(&[ "geometry", "DC" ]) {
 					Some(field) => match field.as_f64() {
 						Some(number) => number as f32,
-						None => panic!("Tool diameter parse error"),
+						None => panic!("Tool diameter is not a number for tool #{}", tool_number),
 					},
 					None => panic!("Tool diameter not defined"),
 				}
