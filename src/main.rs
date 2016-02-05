@@ -84,9 +84,13 @@ fn main() {
 		})
 		.collect::<Vec<FusionTool>>();
 
+	println!("Tools imported from Fusion 360\n");
+
 	println!("No.\tDia.\tDescription");
 
 	for tool in fusion_tools {
 		println!("{}", tool);
 	}
+
+	println!("");
 }
