@@ -3,8 +3,8 @@ mod fusion_tool;
 mod linuxcnc_tool;
 
 use std::error::Error;
-use std::fs::File;
-use std::io::Read;
+use std::fs::{ File, OpenOptions };
+use std::io::{ Read, Write };
 use std::env;
 use std::process;
 
@@ -14,6 +14,7 @@ use linuxcnc_tool::LinuxCNCTool;
 
 fn main() {
 	let path = env::args().last().unwrap();
+	let out_path = "./tooltable.tbl";
 
 	let mut f = match File::open(&path) {
 		Ok(file) => file,
@@ -65,9 +66,9 @@ fn main() {
 					None => String::from(""),
 				},
 
-				cutter_type: match tool.find("type") {
+				family: match tool.find("type") {
 					Some(field) => match field.as_string() {
-						Some(cutter_type) => String::from(cutter_type),
+						Some(family) => String::from(family),
 						None => panic!("Tool type parse error"),
 					},
 					None => String::from(""),
@@ -84,13 +85,38 @@ fn main() {
 		})
 		.collect::<Vec<FusionTool>>();
 
-	println!("Tools imported from Fusion 360\n");
+	println!("{} tools imported from Fusion 360\n", fusion_tools.len());
 
 	println!("No.\tDia.\tDescription");
 
-	for tool in fusion_tools {
+	for tool in fusion_tools.iter() {
 		println!("{}", tool);
 	}
 
 	println!("");
+
+	let linuxcnc_tools = fusion_tools
+		.iter()
+		.map(|tool| LinuxCNCTool {
+			number: tool.number,
+			pocket: tool.number,
+			diameter: tool.diameter,
+			description: format!("{} ({})", tool.description, tool.family),
+		})
+		.collect::<Vec<LinuxCNCTool>>();
+
+	let mut output_file = match OpenOptions::new().write(true).create(true).open(out_path) {
+		Ok(file) => file,
+		Err(e) => panic!("Unable to open {} for writing: {}", out_path, Error::description(&e)),
+	};
+
+	output_file.set_len(0);
+
+	for t in linuxcnc_tools.iter() {
+		let line = format!("T{} P{} D{} ;{}\n", t.number, t.number, t.diameter, t.description);
+
+		output_file.write(String::from(line).as_bytes());
+	}
+
+	output_file.sync_all();
 }
