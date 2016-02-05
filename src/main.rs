@@ -7,25 +7,33 @@ use std::fs::{ File, OpenOptions };
 use std::io::{ Read, Write };
 use std::env;
 use std::process;
+use std::path;
 
 use rustc_serialize::json::Json;
 use fusion_tool::FusionTool;
 use linuxcnc_tool::LinuxCNCTool;
 
 fn main() {
-	let path = env::args().last().unwrap();
-	let out_path = "./tooltable.tbl";
+	if env::args().len() < 3 {
+		panic!("Program must at least have an input and output path");
+	}
 
-	let mut f = match File::open(&path) {
+	let out_path_arg = env::args().last().unwrap();
+	let path_arg = env::args().nth(env::args().len() - 2).unwrap();
+
+	let out_path = path::Path::new(&out_path_arg);
+	let in_path = path::Path::new(&path_arg);
+
+	let mut f = match File::open(&in_path) {
 		Ok(file) => file,
-		Err(e) => panic!("Unable to open {}: {}", path, Error::description(&e)),
+		Err(e) => panic!("Unable to open {}: {}", in_path.display(), Error::description(&e)),
 	};
 
 	let mut fusion_tools_string = String::new();
 
 	match f.read_to_string(&mut fusion_tools_string) {
 		Ok(string) => string,
-		Err(e) => panic!("Unable to read {}: {}", path, Error::description(&e)),
+		Err(e) => panic!("Unable to read {}: {}", in_path.display(), Error::description(&e)),
 	};
 
 	let parsed_file = match Json::from_str(&fusion_tools_string) {
@@ -85,7 +93,7 @@ fn main() {
 		})
 		.collect::<Vec<FusionTool>>();
 
-	println!("{} tools imported from Fusion 360\n", fusion_tools.len());
+	println!("{} tools imported from Fusion 360 export file {}\n", fusion_tools.len(), in_path.display());
 
 	println!("No.\tDia.\tDescription");
 
@@ -105,9 +113,9 @@ fn main() {
 		})
 		.collect::<Vec<LinuxCNCTool>>();
 
-	let mut output_file = match OpenOptions::new().write(true).create(true).open(out_path) {
+	let mut output_file = match OpenOptions::new().write(true).create(true).open(&out_path) {
 		Ok(file) => file,
-		Err(e) => panic!("Unable to open {} for writing: {}", out_path, Error::description(&e)),
+		Err(e) => panic!("Unable to open {} for writing: {}", out_path.display(), Error::description(&e)),
 	};
 
 	match output_file.set_len(0) {
@@ -125,7 +133,7 @@ fn main() {
 	}
 
 	match output_file.sync_all() {
-		Ok(_) => println!("Tool table saved successfully"),
+		Ok(_) => println!("Tool table saved to {} successfully", out_path.display()),
 		Err(e) => panic!("JSON parse error: {}", Error::description(&e)),
 	};
 }

@@ -1,0 +1,7 @@
+T3 P3 D4 ;3 flute 4mm polished carbide for aluminium (flat end mill)
+T1 P1 D2 ;2mm 2 flute carbide (flat end mill)
+T7 P7 D4 ;Stub drill 2 flute 4mm (spot drill)
+T2 P2 D5 ;3 flute 5mm polished carbide for aluminium (flat end mill)
+T8 P8 D8.3 ;3 flute 8.3mm chamfer mill (chamfer mill)
+T4 P4 D4 ;Ball endmill 4 flute (ball end mill)
+T5 P5 D3 ;3mm HSS twist drill (drill)
