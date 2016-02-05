@@ -1,8 +1,7 @@
 extern crate rustc_serialize;
-use rustc_serialize::json::*;
 use std::fmt;
 
-#[derive(RustcDecodable, Debug)]
+#[derive(Debug)]
 pub struct FusionTool {
 	pub number: u16,
 	pub description: String,
