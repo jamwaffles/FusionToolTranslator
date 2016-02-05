@@ -3,7 +3,6 @@ extern crate rustc_serialize;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
 use std::env;
 
 fn main() {
@@ -14,12 +13,12 @@ fn main() {
 		Ok(file) => file,
 	};
 
-	let mut fusionToolsString = String::new();
+	let mut fusion_tools_string = String::new();
 
-	match f.read_to_string(&mut fusionToolsString) {
+	match f.read_to_string(&mut fusion_tools_string) {
 		Err(e) => panic!("Unable to read {}: {}", path, Error::description(&e)),
 		Ok(string) => string,
 	};
 
-	print!("{}", fusionToolsString);
+	print!("{}", fusion_tools_string);
 }
