@@ -41,16 +41,17 @@ fn main() {
 		None => panic!("Invalid JSON: 'data' key not present"),
 	};
 
-	let mut fusion_tools: Vec<FusionTool> = Vec::new();
+	let fusion_tools = parsed_tools
+		.iter()
+		.map(|tool|
+			FusionTool {
+				number: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
+				pocket: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
+				description: String::from(tool.find("description").unwrap().as_string().unwrap()),
+				diameter: tool.find_path(&[ "geometry", "tip-diameter" ]).unwrap().as_f64().unwrap() as f32,
+			}
+		)
+		.collect::<Vec<FusionTool>>();
 
-	for tool in parsed_tools.iter() {
-		fusion_tools.push(FusionTool {
-			number: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
-			pocket: tool.find_path(&[ "post-process", "number" ]).unwrap().as_u64().unwrap() as u16,
-			description: String::from(tool.find("description").unwrap().as_string().unwrap()),
-			diameter: tool.find_path(&[ "geometry", "tip-diameter" ]).unwrap().as_f64().unwrap() as f32,
-		})
-	}
-
-	println!("{}", fusion_tools[0]);
+	println!("Parsed {} tools", fusion_tools.len());
 }
