@@ -13,30 +13,8 @@ use rustc_serialize::json::Json;
 use fusion_tool::FusionTool;
 use linuxcnc_tool::LinuxCNCTool;
 
-fn main() {
-	if env::args().len() < 3 {
-		panic!("Program must at least have an input and output path");
-	}
-
-	let out_path_arg = env::args().last().unwrap();
-	let path_arg = env::args().nth(env::args().len() - 2).unwrap();
-
-	let out_path = path::Path::new(&out_path_arg);
-	let in_path = path::Path::new(&path_arg);
-
-	let mut f = match File::open(&in_path) {
-		Ok(file) => file,
-		Err(e) => panic!("Unable to open {}: {}", in_path.display(), Error::description(&e)),
-	};
-
-	let mut fusion_tools_string = String::new();
-
-	match f.read_to_string(&mut fusion_tools_string) {
-		Ok(string) => string,
-		Err(e) => panic!("Unable to read {}: {}", in_path.display(), Error::description(&e)),
-	};
-
-	let parsed_file = match Json::from_str(&fusion_tools_string) {
+fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
+	let parsed_file = match Json::from_str(&fusion_tools_json) {
 		Ok(parsed) => parsed,
 		Err(e) => panic!("JSON parse error: {}", Error::description(&e)),
 	};
@@ -93,7 +71,7 @@ fn main() {
 		})
 		.collect::<Vec<FusionTool>>();
 
-	println!("{} tools imported from Fusion 360 export file {}\n", fusion_tools.len(), in_path.display());
+	println!("{} tools parsed\n", fusion_tools.len());
 
 	println!("No.\tDia.\tDescription");
 
@@ -103,7 +81,7 @@ fn main() {
 
 	println!("");
 
-	let linuxcnc_tools = fusion_tools
+	fusion_tools
 		.iter()
 		.map(|tool| LinuxCNCTool {
 			number: tool.number,
@@ -111,7 +89,33 @@ fn main() {
 			diameter: tool.diameter,
 			description: format!("{} ({})", tool.description, tool.family),
 		})
-		.collect::<Vec<LinuxCNCTool>>();
+		.collect::<Vec<LinuxCNCTool>>()
+}
+
+fn main() {
+	if env::args().len() < 3 {
+		panic!("Program must at least have an input and output path");
+	}
+
+	let out_path_arg = env::args().last().unwrap();
+	let path_arg = env::args().nth(env::args().len() - 2).unwrap();
+
+	let out_path = path::Path::new(&out_path_arg);
+	let in_path = path::Path::new(&path_arg);
+
+	let mut f = match File::open(&in_path) {
+		Ok(file) => file,
+		Err(e) => panic!("Unable to open {}: {}", in_path.display(), Error::description(&e)),
+	};
+
+	let mut fusion_tools_string = String::new();
+
+	match f.read_to_string(&mut fusion_tools_string) {
+		Ok(string) => string,
+		Err(e) => panic!("Unable to read {}: {}", in_path.display(), Error::description(&e)),
+	};
+
+	let linuxcnc_tools = fusion360_convert(fusion_tools_string);
 
 	let mut output_file = match OpenOptions::new().write(true).create(true).open(&out_path) {
 		Ok(file) => file,
