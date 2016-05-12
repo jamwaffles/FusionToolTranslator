@@ -21,23 +21,23 @@ $ cargo run ./export.tools ./tool.tbl
 
 16 tools parsed
 
-No.	Dia.	Description
-#11	1mm	2 flute shank cutter (flat end mill)
-#3	4mm	3 flute 4mm polished carbide for aluminium (flat end mill)
-#10	4.2mm	TiN jobber drill (drill)
-#1	2mm	2mm 2 flute carbide (flat end mill)
-#12	3mm	3 flute corner radius (bull nose end mill)
-#7	6mm	2 flute center cutting (flat end mill)
-#14	5.4mm	TiN coated jobber drill (drill)
-#13	3.4mm	TiN coated jobber drill (drill)
-#9	4mm	Spot drill 2 flute 4mm (spot drill)
-#2	5mm	3 flute 5mm polished carbide for aluminium (flat end mill)
-#16	3mm	Polished carbide (flat end mill)
-#6	6mm	Ball endmill 4 flute (ball end mill)
-#15	6mm	Spot drill (spot drill)
-#5	8.3mm	3 flute 8.3mm chamfer mill (chamfer mill)
-#4	4mm	Ball endmill 4 flute (ball end mill)
-#8	3mm	3mm HSS twist drill (drill)
+No.   Dia.    Description
+#11   1mm     2 flute shank cutter (flat end mill)
+#3    4mm     3 flute 4mm polished carbide for aluminium (flat end mill)
+#10   4.2mm   TiN jobber drill (drill)
+#1    2mm     2mm 2 flute carbide (flat end mill)
+#12   3mm     3 flute corner radius (bull nose end mill)
+#7    6mm     2 flute center cutting (flat end mill)
+#14   5.4mm   TiN coated jobber drill (drill)
+#13   3.4mm   TiN coated jobber drill (drill)
+#9    4mm     Spot drill 2 flute 4mm (spot drill)
+#2    5mm     3 flute 5mm polished carbide for aluminium (flat end mill)
+#16   3mm     Polished carbide (flat end mill)
+#6    6mm     Ball endmill 4 flute (ball end mill)
+#15   6mm     Spot drill (spot drill)
+#5    8.3mm   3 flute 8.3mm chamfer mill (chamfer mill)
+#4    4mm     Ball endmill 4 flute (ball end mill)
+#8    3mm     3mm HSS twist drill (drill)
 
 Tool table saved to ./tool.tbl successfully
 
