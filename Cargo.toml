@@ -1,7 +1,8 @@
 [package]
 name = "fusion360_tool_translator"
-version = "0.1.0"
+version = "2.0.0"
 authors = ["James Waples <jamwaffles@gmail.com>"]
 
 [dependencies]
 rustc-serialize = "0.3.16"
+zip = "0.1.17"

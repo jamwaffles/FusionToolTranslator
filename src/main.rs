@@ -1,4 +1,6 @@
 extern crate rustc_serialize;
+extern crate zip;
+
 mod fusion_tool;
 mod linuxcnc_tool;
 
@@ -103,14 +105,18 @@ fn main() {
 	let out_path = path::Path::new(&out_path_arg);
 	let in_path = path::Path::new(&path_arg);
 
-	let mut f = match File::open(&in_path) {
+	let f = match File::open(&in_path) {
 		Ok(file) => file,
 		Err(e) => panic!("Unable to open {}: {}", in_path.display(), Error::description(&e)),
 	};
 
+	let mut zip = zip::read::ZipArchive::new(f).unwrap();
+
+	let mut zip_file = zip.by_index(0).unwrap();
+
 	let mut fusion_tools_string = String::new();
 
-	match f.read_to_string(&mut fusion_tools_string) {
+	match zip_file.read_to_string(&mut fusion_tools_string) {
 		Ok(string) => string,
 		Err(e) => panic!("Unable to read {}: {}", in_path.display(), Error::description(&e)),
 	};
