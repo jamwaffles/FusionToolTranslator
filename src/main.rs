@@ -34,41 +34,53 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 
 	let fusion_tools = parsed_tools
 		.iter()
-		.map(|tool| {
-			let tool_number = match tool.find_path(&[ "post-process", "number" ]) {
-				Some(field) => match field.as_u64() {
-					Some(number) => number as u16,
-					None => panic!("Tool number parse error, probably not a number"),
+		.filter_map(|tool| {
+			let desc = match tool.find("description") {
+				Some(field) => match field.as_string() {
+					Some(description) => String::from(description),
+					None => panic!("Tool description parse error"),
 				},
-				None => panic!("Tool number not defined"),
+				None => String::from("(no description)"),
 			};
 
-			FusionTool {
-				number: tool_number,
-
-				description: match tool.find("description") {
-					Some(field) => match field.as_string() {
-						Some(description) => String::from(description),
-						None => panic!("Tool description parse error"),
-					},
-					None => String::from(""),
+			let tool_number = match tool.find_path(&[ "post-process", "number" ]) {
+				Some(field) => match field.as_u64() {
+					Some(number) => Some(number as u16),
+					None => panic!("Tool number parse error, probably not a number"),
 				},
+				None => None,
+			};
 
-				family: match tool.find("type") {
-					Some(field) => match field.as_string() {
-						Some(family) => String::from(family),
-						None => panic!("Tool type parse error"),
-					},
-					None => String::from(""),
+			match tool_number {
+				Some(number) =>
+					Some(FusionTool {
+						number: number,
+
+						description: desc.clone(),
+
+						family: match tool.find("type") {
+							Some(field) => match field.as_string() {
+								Some(family) => String::from(family),
+								None => panic!("Tool type parse error"),
+							},
+							None => String::from(""),
+						},
+
+						diameter: match tool.find_path(&[ "geometry", "DC" ]) {
+							Some(field) => match field.as_f64() {
+								Some(number) => number as f32,
+								None => panic!("Tool diameter is not a number for tool #{}", number),
+							},
+							None => panic!("Tool diameter not defined {}", desc),
+						}
+
+				}),
+
+				None => {
+					println!("WARN: Tool has no post, ignoring tool {}", desc);
+
+					None
 				},
-
-				diameter: match tool.find_path(&[ "geometry", "DC" ]) {
-					Some(field) => match field.as_f64() {
-						Some(number) => number as f32,
-						None => panic!("Tool diameter is not a number for tool #{}", tool_number),
-					},
-					None => panic!("Tool diameter not defined"),
-				}
 			}
 		})
 		.collect::<Vec<FusionTool>>();
