@@ -2,6 +2,24 @@
 
 This is primarily a project for learning Rust, but it should also end up as a reasonably useful utility. Its purpose is to take an exported tool library from Fusion 360's tool library (which export JSON) and convert into a `.tbl` file ready to be read by LinuxCNC.
 
+## Building
+
+Building should be trivial on macOS and Linux (however I've only tested on macOS); simply run
+
+```shell
+cargo build
+```
+
+and Cargo should download and compile dependencies and compile the app. Run it as below with `cargo run inputfile.tools outputtable.tbl`.
+
+### Windows
+
+Rust version used: 1.12.0
+
+Some of the dependencies require GCC to be installed to compile themselves. You can install GCC for Windows [here](https://nuwen.net/mingw.html). This project is known to compile on MinGW 14.0.
+
+Download MinGW and extract it somewhere. To get GCC onto your $PATH variable, the easiest thing to do is to run `open_distro_window.bat`. Navigate to this project folder and run `cargo build` as normal.
+
 ## Usage
 
 ```bash
