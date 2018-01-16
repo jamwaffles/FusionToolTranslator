@@ -35,6 +35,22 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 	let fusion_tools = parsed_tools
 		.iter()
 		.filter_map(|tool| {
+			let family = match tool.find("type") {
+				Some(field) => match field.as_string() {
+					Some(family) => {
+						if family == "holder".to_string() {
+							return None
+						}
+
+						String::from(family)
+					},
+					None => panic!("Tool type parse error"),
+				},
+				None => {
+					return None
+				},
+			};
+
 			let desc = match tool.find("description") {
 				Some(field) => match field.as_string() {
 					Some(description) => String::from(description),
@@ -58,13 +74,7 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 
 						description: desc.clone(),
 
-						family: match tool.find("type") {
-							Some(field) => match field.as_string() {
-								Some(family) => String::from(family),
-								None => panic!("Tool type parse error"),
-							},
-							None => String::from(""),
-						},
+						family,
 
 						diameter: match tool.find_path(&[ "geometry", "DC" ]) {
 							Some(field) => match field.as_f64() {
