@@ -32,7 +32,7 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 		None => panic!("Invalid JSON: 'data' key not present"),
 	};
 
-	let fusion_tools = parsed_tools
+	let mut fusion_tools = parsed_tools
 		.iter()
 		.filter_map(|tool| {
 			let family = match tool.find("type") {
@@ -94,6 +94,8 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 			}
 		})
 		.collect::<Vec<FusionTool>>();
+
+	fusion_tools.sort_by_key(|tool| tool.number);
 
 	println!("{} tools parsed\n", fusion_tools.len());
 
