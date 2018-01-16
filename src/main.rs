@@ -72,7 +72,7 @@ fn fusion360_convert(fusion_tools_json: String) -> Vec<LinuxCNCTool> {
 					Some(FusionTool {
 						number: number,
 
-						description: desc.clone(),
+						description: desc.trim().to_string(),
 
 						family,
 
